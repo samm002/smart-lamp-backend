@@ -1,12 +1,11 @@
 const mqtt = require('mqtt')
-const { local } = require('./brokerConfig')
-const { writeData, readData } = require('../database/influxdb_service')
+const { local } = require('../config/mqttConfig')
+const { writeData, readData } = require('./influxdbService')
 const topic = "smart-lamp/kuta"
 
 const mqtt_client = mqtt.connect(local)
 
 const mqttListener = () => {
-  console.log(local)
   mqtt_client.on("connect", () => {
     console.log("Connected to MQTT broker...");
     mqtt_client.subscribe(topic, (err) => {

@@ -1,5 +1,5 @@
-const { Point, bucket, measurement, writeClient, readClient } = require('./influxdb_config')
-const { dataFormat } = require('./influxdb_schema')
+const { Point, bucket, measurement, writeClient, readClient } = require('../config/influxdbConfig')
+const { dataFormat } = require('../models/lampState')
 
 const writeData = async (device_id, state) => {
   const time = new Date
