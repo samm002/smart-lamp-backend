@@ -21,25 +21,45 @@ const writeData = async (device_id, state) => {
   }
 }
 
-const readData = async () => {
+const getAllLampState = async () => {
   const results = []
   const fluxQuery =
   `from(bucket:"${bucket}") 
     |> range(start: -1d) 
-    |> filter(fn: (r) => r._measurement == "${measurement}"
-  )`
+    |> filter(fn: (r) => r._measurement == "${measurement}")`
 
-  console.log('Get All Data')
+  console.log('Get All Lamp State')
+
   for await (const { values, tableMeta } of readClient.iterateRows(fluxQuery)) {
     const rawData = tableMeta.toObject(values)
     const result = dataFormat(rawData);
     results.push(result)
   }
-  console.log('Get All Data Succcess')
+
   return results
+}
+
+const getLatestLampState = async () => {
+  let result = []
+  const fluxQuery =
+  `from(bucket:"${bucket}") 
+    |> range(start: -1d) 
+    |> filter(fn: (r) => r._measurement == "${measurement}")
+    |> filter(fn: (r) => r.device_id == "1")
+    |> last()`
+
+  console.log('Get All Lamp State')
+
+  for await (const { values, tableMeta } of readClient.iterateRows(fluxQuery)) {
+    const rawData = tableMeta.toObject(values)
+    result.push(dataFormat(rawData));
+  }
+  
+  return result[0]
 }
 
 module.exports = {
   writeData,
-  readData,
+  getAllLampState,
+  getLatestLampState,
 }
