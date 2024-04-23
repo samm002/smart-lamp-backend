@@ -22,6 +22,7 @@ const writeData = async (device_id, state) => {
 }
 
 const readData = async () => {
+  const results = []
   const fluxQuery =
   `from(bucket:"${bucket}") 
     |> range(start: -1d) 
@@ -32,9 +33,10 @@ const readData = async () => {
   for await (const { values, tableMeta } of readClient.iterateRows(fluxQuery)) {
     const rawData = tableMeta.toObject(values)
     const result = dataFormat(rawData);
-    console.log(result)
+    results.push(result)
   }
   console.log('Get All Data Succcess')
+  return results
 }
 
 module.exports = {
