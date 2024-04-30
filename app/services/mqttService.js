@@ -1,6 +1,6 @@
 const mqtt = require('mqtt')
 const { local } = require('../config/mqttConfig')
-const { writeData, readData } = require('./influxdbService')
+const { writeData, getAllLampState, getLatestLampState } = require('./influxdbService')
 const topic = "smart-lamp/kuta"
 
 const mqtt_client = mqtt.connect(local)
@@ -39,9 +39,9 @@ const mqttListener = () => {
     console.log('Message received from topic', topic)
     console.log('Message :', parsedPayload)
     console.log('Time :', new Date(Date.now()).toLocaleString());
-  
+
     writeData(device_id, state)
-    readData()
+    getAllLampState()
   })
 }
 

@@ -21,12 +21,15 @@ const writeData = async (device_id, state) => {
   }
 }
 
-const getAllLampState = async () => {
+const getAllLampState = async (device_id) => {
   const results = []
+
   const fluxQuery =
   `from(bucket:"${bucket}") 
-    |> range(start: -1d) 
-    |> filter(fn: (r) => r._measurement == "${measurement}")`
+    |> range(start: -1y) 
+    |> filter(fn: (r) => r._measurement == "${measurement}")
+    |> filter(fn: (r) => r.device_id == "${device_id}")
+    |> sort(columns:["_time"], desc: true)`
 
   console.log('Get All Lamp State')
 
@@ -43,7 +46,7 @@ const getLatestLampState = async () => {
   let result = []
   const fluxQuery =
   `from(bucket:"${bucket}") 
-    |> range(start: -1d) 
+    |> range(start: -1y) 
     |> filter(fn: (r) => r._measurement == "${measurement}")
     |> filter(fn: (r) => r.device_id == "1")
     |> last()`
@@ -55,7 +58,7 @@ const getLatestLampState = async () => {
     result.push(dataFormat(rawData));
   }
   
-  return result[0]
+  return result
 }
 
 module.exports = {
