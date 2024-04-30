@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bathroom Control & Monitoring</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Bathroom Condition</h1>  
+  <div id="lampControl">
+    <p>Time</p>
+    <p id="currentTime"></p>
+    <p>Lamp State<span id="currentLampState"></span></p>
+    <p>Last Updated<span id="lampStateTime"></span></p>
+    <div class="onOffButton">
+      <button id="lampOn">Turn on Lamp</button>
+      <button id="lampOff">Turn off Lamp</button>
+    </div>
+    <button id="logs">Logs</button>
+    <div id="popup" class="popup">
+      <h3>Bathroom lamp state history :</h3>
+      <p>total : <span id="totalLampState"></span></p>
+      <table id="lampStates"></table> <!-- Changed div to table -->
+      <div class="button-group">
+        <button id="prevPage">Previous</button>
+        <button id="closePopup">Close</button>
+        <button id="nextPage">Next</button>
+      </div>
+    </div>  
+  </div>
+  <h3>Log :</h3>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+
+    socket.on('current lamp state', function(data) {
+      var currentLampState = document.getElementById('currentLampState');
+      var currentLampStateTime = document.getElementById('lampStateTime');
+      currentLampState.innerHTML = ""
+      currentLampStateTime.innerHTML = ""
+
+      const lampState = document.createElement("p");
+      const lampStateTime = document.createElement("p");
+      lampState.textContent = data.state.toUpperCase()
+      lampStateTime.textContent = data.timestamp
+      currentLampState.appendChild(lampState);
+      currentLampStateTime.appendChild(lampStateTime);
+    })
+
+    socket.on('log', function(response) {
+      var lampStates = response.lampStates;
+      var total = response.total
+      var logTable = document.getElementById("lampStates");
+      var totalLampState = document.getElementById('totalLampState');
+      logTable.innerHTML = "";
+      totalLampState.innerHTML = "";  
+      
+      let totalState = document.createElement("span");
+      totalState.textContent = total;
+      totalLampState.appendChild(totalState);
+
+      var pageSize = 10;
+      var currentPage = 0;
+
+      function loadPage(page) {
+        logTable.innerHTML = "";
+        var headerRow = document.createElement("tr");
+        var headers = ["Device ID", "State", "Timestamp"];
+        headers.forEach(function(headerText, index) {
+          var header = document.createElement("th");
+          header.textContent = headerText;
+          if (index === 2) {
+            header.style.width = "200px";
+          }
+          headerRow.appendChild(header);
+        });
+        logTable.appendChild(headerRow);
+        var start = page * pageSize;
+        var end = Math.min(start + pageSize, lampStates.length);
+        
+        for (var i = start; i < end; i++) {
+          var row = document.createElement("tr");
+          Object.values(lampStates[i]).forEach(function(value, index) {
+            var cell = document.createElement("td");
+            if (index === 2) {
+              cell.style.width = "200px";
+            }
+            cell.textContent = value;
+            row.appendChild(cell);
+          });
+          logTable.appendChild(row);
+        }
+      }
+
+      loadPage(currentPage);
+
+      document.getElementById("prevPage").addEventListener("click", () => {
+        if (currentPage > 0) {
+          currentPage--;
+          loadPage(currentPage);
+        }
+      });
+      document.getElementById("nextPage").addEventListener("click", () => {
+        if ((currentPage + 1) * pageSize < lampStates.length) {
+          currentPage++;
+          loadPage(currentPage);
+        }
+      });
+    });
+  </script>
+
+  <script src="script.js"></script>
+</body>
+</html>
