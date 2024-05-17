@@ -24,6 +24,10 @@ h1 {
   margin-top: 30px;
 }
 
+#lampStates {
+  margin-bottom: 15px;
+}
+
 .onOffButton {
   display: flex;
   justify-content: center;
@@ -74,4 +78,98 @@ button:hover {
 
 #closePopup:hover {
   background-color: #555;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+tr {
+  padding: 8px;
+  width: 50px;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: center;
+  padding: 10px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+/* Toogle Button */
+.toggle-switch, .toggle-switch .toggle-knob {
+  -moz-transition: all 0.2s ease-in;
+  -webkit-transition: all 0.2s ease-in;
+  -o-transition: all 0.2s ease-in;
+  transition: all 0.2s ease-in;
+}
+
+.toggle-switch {
+  height: 30px;
+  width: 65px;
+  display: inline-block;
+  position: relative;
+  background-color: #ffffff;
+  margin: 2px;
+  margin-bottom: 5px;
+  border-radius: 30px;
+  cursor: pointer;
+  border: solid 1px #d2d6de;
+  box-shadow: inset 1px 1px 9px -3px rgba(4, 4, 4, 0.08), 1px 2px 6px -2px rgba(0, 0, 0, 0.01);
+}
+
+.toggle-switch .toggle-knob {
+  width: 28px;
+  height: 26px;
+  display: block;
+  background-color: #ffffff;
+  border: solid 1px rgba(126, 126, 126, 0.07);
+  box-shadow: 0 1px 3px rgba(107, 106, 106, 0.26), 0 5px 1px rgba(107, 106, 106, 0.13);
+  border-radius: 26px;
+  margin: 1px 1px;
+}
+
+.toggle-switch.active {
+  background-color: #77e189;
+  border: solid 1px transparent;
+}
+
+.toggle-switch.active .toggle-knob {
+  margin-left: 35px;
+}
+
+.on-text, .off-text {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: white;
+  pointer-events: none; /* Ensures text doesn't interfere with click */
+  transition: opacity 0.3s ease-in-out;
+}
+
+.on-text {
+  left: 10px;
+  display: none; /* Initially hidden */
+}
+.off-text {
+  color: black;
+  right: 10px;
+}
+.toggle-switch.active .on-text {
+  display: block; /* Display when toggle is active */
+}
+.toggle-switch.active .off-text {
+  display: none; /* Hide when toggle is active */
 }

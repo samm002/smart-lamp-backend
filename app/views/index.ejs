@@ -9,22 +9,33 @@
 <body>
   <h1>Bathroom Condition</h1>  
   <div id="lampControl">
-    <p>Time : <span id="currentTime"></span></p>
-    <p>Lamp State : <span id="lampState">OFF</span></p>
+    <p>Time</p>
+    <p id="currentTime"></p>
+    <p>Lamp State<span id="currentLampState"></span></p>
+    <p>Last Updated<span id="lampStateTime"></span></p>
+    <p>Full Control</p>
+    <span class="toggle-switch">
+      <span class="on-text">ON</span>
+      <span class="off-text">OFF</span>
+      <span class="toggle-knob"></span>
+    </span>
     <div class="onOffButton">
       <button id="lampOn">Turn on Lamp</button>
       <button id="lampOff">Turn off Lamp</button>
     </div>
     <button id="logs">Logs</button>
     <div id="popup" class="popup">
-      <p>Bathroom lamp state history viewed in logs :</p>
-      <p>14.15 : Lamp On</p>
-      <p>14.30 : Lamp Off</p>
-      <p>15.45 : Lamp On</p>
-      <button id="closePopup">Close</button>
+      <h3>Bathroom lamp state history :</h3>
+      <p>total : <span id="totalLampState"></span></p>
+      <table id="lampStates"></table>
+      <div class="button-group">
+        <button id="prevPage">Previous</button>
+        <button id="closePopup">Close</button>
+        <button id="nextPage">Next</button>
+      </div>
+    </div>  
   </div>
-  </div>
-
+  <script src="/socket.io/socket.io.js"></script>
   <script src="scripts.js"></script>
 </body>
 </html>

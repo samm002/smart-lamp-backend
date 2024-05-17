@@ -3,7 +3,9 @@ const dataFormat = (data) => {
   const locatTime = getTime.toLocaleString()
   return {
     device_id: data.device_id,
-    [data._field]: data._value ? "on" : "off",
+    state: data.state ? "on" : "off",
+    trigger: data.trigger,
+    full_control: data.full_control ? "yes" : "no",
     timestamp: locatTime,
   };
 };

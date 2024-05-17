@@ -1,7 +1,7 @@
 const mqtt = require('mqtt')
 const { local } = require('../config/mqttConfig')
 const { writeData, getAllLampState, getLatestLampState } = require('./influxdbService')
-const topic = "smart-lamp/kuta"
+const topic = "smart-lamp/device"
 
 const mqtt_client = mqtt.connect(local)
 
@@ -10,7 +10,7 @@ const mqttListener = () => {
     console.log("Connected to MQTT broker...");
     mqtt_client.subscribe(topic, (err) => {
       if (!err) {
-        console.log(`Master station successfully subscribed to topic : ${topic}`);
+        console.log(`Server successfully subscribed to topic : ${topic}`);
         console.log("Waiting for MQTT messages...");
       } else {
         console.error(`Subscribed to topic : ${topic} failed`);
@@ -31,20 +31,46 @@ const mqttListener = () => {
     console.log("Disconnected from MQTT broker", message);
   });
   
-  mqtt_client.on("message", async (topic, payload) => {
-    const parsedPayload = JSON.parse(payload)
-    const device_id = parsedPayload.device_id
-    const state = parsedPayload.state
-  
-    console.log('Message received from topic', topic)
-    console.log('Message :', parsedPayload)
-    console.log('Time :', new Date(Date.now()).toLocaleString());
+  mqtt_client.on('message', async (topic, payload) => {
+    try {
+      const parsedPayload = JSON.parse(payload)
+      if (typeof parsedPayload === 'object') {
+        const device_id = parsedPayload.device_id
+        const state = parsedPayload.state
+        const trigger = parsedPayload.trigger
+        const full_control = parsedPayload.full_control
 
-    writeData(device_id, state)
-    getAllLampState()
+        console.log('Message received from topic', topic)
+        console.log('Message :', parsedPayload)
+        console.log('Time :', new Date(Date.now()).toLocaleString());
+    
+        writeData(device_id, state, trigger, full_control)
+      } else {
+        console.log('This message will not be processed')
+        console.log('Message received from topic', topic)
+        console.log('Message :', parsedPayload)
+        console.log('Time :', new Date(Date.now()).toLocaleString());
+      }
+      
+    } catch (error) {
+      console.error('Error receiving message :')
+      console.error(error.message)
+      console.error('Please input a valid JSON data!')
+    }
   })
 }
 
+const publishMessage = (topic, message) => {
+  const payload =  JSON.stringify(message);
+  mqtt_client.publish(topic, payload, (error) => {
+    if (error) {
+      console.error(`Failed to publish data to topic : ${topic}, with data : ${JSON.stringify(message)}`);
+    }
+  });
+  return payload;
+};
+
 module.exports = {
   mqttListener,
+  publishMessage,
 }

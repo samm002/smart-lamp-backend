@@ -1,12 +1,14 @@
 const { Point, bucket, measurement, writeClient, readClient } = require('../config/influxdbConfig')
 const { dataFormat } = require('../models/lampState')
 
-const writeData = async (device_id, state) => {
+const writeData = async (device_id, state, trigger, full_control) => {
   const time = new Date
   const timestamp = Date.parse(time.toLocaleString());
   const point = new Point(measurement)
     .tag('device_id', device_id)
     .booleanField('state', state)
+    .stringField('trigger', trigger)
+    .booleanField('full_control', full_control)
     .timestamp(timestamp)
 
   console.log('point :', point)
@@ -29,9 +31,8 @@ const getAllLampState = async (device_id) => {
     |> range(start: -1y) 
     |> filter(fn: (r) => r._measurement == "${measurement}")
     |> filter(fn: (r) => r.device_id == "${device_id}")
+    |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
     |> sort(columns:["_time"], desc: true)`
-
-  console.log('Get All Lamp State')
 
   for await (const { values, tableMeta } of readClient.iterateRows(fluxQuery)) {
     const rawData = tableMeta.toObject(values)
@@ -49,16 +50,16 @@ const getLatestLampState = async () => {
     |> range(start: -1y) 
     |> filter(fn: (r) => r._measurement == "${measurement}")
     |> filter(fn: (r) => r.device_id == "1")
-    |> last()`
-
-  console.log('Get All Lamp State')
+    |> last()
+    |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
+    |> sort(columns:["_time"], desc: true)`
 
   for await (const { values, tableMeta } of readClient.iterateRows(fluxQuery)) {
     const rawData = tableMeta.toObject(values)
     result.push(dataFormat(rawData));
   }
   
-  return result
+  return result[0];
 }
 
 module.exports = {
