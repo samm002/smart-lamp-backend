@@ -5,18 +5,22 @@
   "main": "index.js",
   "scripts": {
     "start": "node --env-file=.env server.js",
-    "dev": "nodemon --env-file=.env server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev-old": "nodemon --env-file=.env server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start_dev": "pm2 start pm2.config.json --env development",
+    "start_prod": "pm2 start pm2.config.json --env production",
+    "stop": "pm2 stop pm2.config.json"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@influxdata/influxdb-client": "^1.33.2",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
-    "socket.io": "^4.7.5",
     "mqtt": "^5.5.2",
+    "socket.io": "^4.7.5",
     "tls": "^0.0.1"
   },
   "devDependencies": {

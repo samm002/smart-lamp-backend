@@ -1,4 +1,5 @@
 credentials
+logs
 testing
 node_modules
 .env
