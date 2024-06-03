@@ -19,6 +19,14 @@ h1 {
   color: #333;
 }
 
+.select-container {
+  text-align: center;
+  flex-direction: column;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 #lampControl {
   text-align: center;
   margin-top: 30px;

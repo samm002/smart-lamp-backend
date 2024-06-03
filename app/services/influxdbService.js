@@ -43,13 +43,13 @@ const getAllLampState = async (device_id) => {
   return results
 }
 
-const getLatestLampState = async () => {
-  let result = []
+const getLatestLampState = async (device_id) => {
+  const result = []
   const fluxQuery =
   `from(bucket:"${bucket}") 
     |> range(start: -1y) 
     |> filter(fn: (r) => r._measurement == "${measurement}")
-    |> filter(fn: (r) => r.device_id == "1")
+    |> filter(fn: (r) => r.device_id == "${device_id}")
     |> last()
     |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
     |> sort(columns:["_time"], desc: true)`

@@ -1,6 +1,6 @@
 const mqtt = require('mqtt')
 const { local } = require('../config/mqttConfig')
-const { writeData, getAllLampState, getLatestLampState } = require('./influxdbService')
+const { writeData } = require('./influxdbService')
 const topic = "smart-lamp/device"
 
 const mqtt_client = mqtt.connect(local)

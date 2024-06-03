@@ -6,8 +6,16 @@ const lampStatus = document.getElementById('currentLampState');
 const logs = document.getElementById('logs');
 const popup = document.getElementById('popup');
 const closePopup = document.getElementById('closePopup');
+const selectDevice = document.getElementById('selectDevice');
 const fullControlToggle = document.querySelector('.toggle-switch');
+const emptyRecord = "Record is Empty";
+
 let fullControl = false;
+let currentLampStateValue;
+let buttonState;
+let currentFullControl;
+
+let socket = io();
 
 function updateCurrentTime() {
   const now = new Date();
@@ -16,13 +24,17 @@ function updateCurrentTime() {
   const seconds = String(now.getSeconds()).padStart(2, '0');
   const currentTimeString = `${hours}:${minutes}:${seconds}`;
   currentTime.textContent = currentTimeString;
+  socket.on('current device', function(data) {
+    selectDevice.value = data;
+  })
 }
 
+socket.emit('current device', selectDevice.value);
 updateCurrentTime();
 
 setInterval(updateCurrentTime, 1000);
 
-fullControlToggle.onclick = function() {
+fullControlToggle.onclick = () => {
   fullControlToggle.classList.toggle('active');
   let toggleStatus = fullControlToggle.classList.contains('active');
   if (toggleStatus) {
@@ -33,47 +45,59 @@ fullControlToggle.onclick = function() {
   socket.emit('fullControlUpdate', fullControl);
 };
 
-buttonOn.addEventListener('click', () => {
-  const currentLampStateValue = lampStatus.textContent.trim();
-  socket.emit('turnOnLampButton', currentLampStateValue);
+selectDevice.addEventListener('change', () => {
+  socket.emit('current device', selectDevice.value);
 })
 
+buttonOn.addEventListener('click', () => {
+  latestLampState = lampStatus.textContent.trim();
+  buttonState = true;
+  socket.emit('triggerButton', buttonState, latestLampState);
+});
+
 buttonOff.addEventListener('click', () => {
-  const currentLampStateValue = lampStatus.textContent.trim();
-  socket.emit('turnOffLampButton', currentLampStateValue);
-})
+  latestLampState = lampStatus.textContent.trim();
+  buttonState = false;
+  socket.emit('triggerButton', buttonState, latestLampState);
+});
 
 logs.addEventListener('click', () => {
   popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
 });
 
 closePopup.addEventListener('click', () => {
-    popup.style.display = 'none';
+  popup.style.display = 'none';
 });
 
-// Socket.io Client Scripts
-var socket = io();
+socket.on('current full control', (data) => {
+  data = (data == 'yes')
+  if (data) {
+    fullControlToggle.classList.add('active');
+  } else {
+    fullControlToggle.classList.remove('active');
+  }
+});
 
-socket.on('current lamp state', function(data) {
-  console.log(data);
-  var currentLampState = document.getElementById('currentLampState');
-  var currentLampStateTime = document.getElementById('lampStateTime');
+socket.on('current lamp state', (data) => {
+  let currentLampState = document.getElementById('currentLampState');
+  let currentLampStateTime = document.getElementById('lampStateTime');
+  currentFullControl = data?.full_control;
   currentLampState.innerHTML = ""
   currentLampStateTime.innerHTML = ""
 
   const lampState = document.createElement("p");
   const lampStateTime = document.createElement("p");
-  lampState.textContent = data.state.toUpperCase();
-  lampStateTime.textContent = data.timestamp;
+  lampState.textContent = data?.state?.toUpperCase() ?? emptyRecord;
+  lampStateTime.textContent = data?.timestamp ?? emptyRecord;;
   currentLampState.appendChild(lampState);
   currentLampStateTime.appendChild(lampStateTime);
 })
 
-socket.on('log', function(response) {
-  var lampStates = response.lampStates;
-  var total = response.total
-  var logTable = document.getElementById("lampStates");
-  var totalLampState = document.getElementById('totalLampState');
+socket.on('log', (response) => {
+  let lampStates = response.lampStates;
+  let total = response.total
+  let logTable = document.getElementById("lampStates");
+  let totalLampState = document.getElementById('totalLampState');
   logTable.innerHTML = "";
   totalLampState.innerHTML = "";  
 
@@ -81,15 +105,15 @@ socket.on('log', function(response) {
   totalState.textContent = total;
   totalLampState.appendChild(totalState);
 
-  var pageSize = 10;
-  var currentPage = 0;
+  let pageSize = 10;
+  let currentPage = 0;
 
   function loadPage(page) {
     logTable.innerHTML = "";
-    var headerRow = document.createElement("tr");
-    var headers = ["Device ID", "State", "Trigger", "Full Control", "Timestamp"];
+    let headerRow = document.createElement("tr");
+    let headers = ["Device ID", "State", "Trigger", "Full Control", "Timestamp"];
     headers.forEach(function(headerText, index) {
-      var header = document.createElement("th");
+      let header = document.createElement("th");
       header.textContent = headerText;
       if (index === 2) {
         header.style.width = "200px";
@@ -98,13 +122,13 @@ socket.on('log', function(response) {
     });
 
     logTable.appendChild(headerRow);
-    var start = page * pageSize;
-    var end = Math.min(start + pageSize, lampStates.length);
+    let start = page * pageSize;
+    let end = Math.min(start + pageSize, lampStates.length);
     
-    for (var i = start; i < end; i++) {
-      var row = document.createElement("tr");
+    for (let i = start; i < end; i++) {
+      let row = document.createElement("tr");
       Object.values(lampStates[i]).forEach(function(value, index) {
-        var cell = document.createElement("td");
+        let cell = document.createElement("td");
         if (index === 2) {
           cell.style.width = "200px";
         }
