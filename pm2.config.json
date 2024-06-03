@@ -1,0 +1,31 @@
+{
+  "apps": [
+    {
+      "name": "smart_lamp",
+      "script": "./server.js",
+
+      "out_file": "./logs/pm2/pm2_log.log",
+      "error_file": "./logs/pm2/pm2_error.log",
+      "merge_logs": true,
+      "log_date_format": "DD-MM HH:mm:ss Z",
+      "log_type": "json",
+      
+      "env_production": {
+        "NODE_ENV": "production",
+        "PORT": 8080,
+        "exec_mode": "cluster_mode"
+      },
+
+      "env_development": {
+        "NODE_ENV": "development",
+        "PORT": 8080,
+        "watch": true,
+        "watch_delay": 3000,
+        "ignore_watch": [
+          "./node_modules",
+          "./logs/*"
+        ]
+      }
+    }
+  ]
+}

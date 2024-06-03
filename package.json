@@ -6,7 +6,10 @@
   "scripts": {
     "start": "node --env-file=.env server.js",
     "dev": "nodemon --env-file=.env server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start_dev": "pm2 start pm2.config.json --env development",
+    "start_prod": "pm2 start pm2.config.json --env production",
+    "stop": "pm2 stop pm2.config.json"
   },
   "keywords": [],
   "author": "",
