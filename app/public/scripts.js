@@ -48,14 +48,13 @@ logs.addEventListener('click', () => {
 });
 
 closePopup.addEventListener('click', () => {
-    popup.style.display = 'none';
+  popup.style.display = 'none';
 });
 
 // Socket.io Client Scripts
 var socket = io();
 
 socket.on('current lamp state', function(data) {
-  console.log(data);
   var currentLampState = document.getElementById('currentLampState');
   var currentLampStateTime = document.getElementById('lampStateTime');
   currentLampState.innerHTML = ""
@@ -63,7 +62,7 @@ socket.on('current lamp state', function(data) {
 
   const lampState = document.createElement("p");
   const lampStateTime = document.createElement("p");
-  lampState.textContent = data.state.toUpperCase();
+  lampState.textContent = data?.state?.toUpperCase() ?? "empty";
   lampStateTime.textContent = data.timestamp;
   currentLampState.appendChild(lampState);
   currentLampStateTime.appendChild(lampStateTime);

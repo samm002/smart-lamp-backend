@@ -1,7 +1,7 @@
 const { getAllLampState, getLatestLampState } = require('./influxdbService');
 const { publishMessage } = require('./mqttService');
 const device_id = 1;
-const publishTopic = "smart-lamp/user"
+const publishTopic = "smart-lamp/device"
 
 let connected = false;
 let currentLampState = null;
@@ -20,7 +20,7 @@ const fullControlOff = (state) => {
 }
 
 const turnOnLampButton = (buttonState) => {
-  latestFullControl = currentFullControl(currentLampState.full_control)
+  latestFullControl = currentFullControl(currentLampState?.full_control)
   const lampState = true;
   if (currentFullControlStatus != latestFullControl) {
     publishMessage(publishTopic, { device_id: device_id, state: lampState, full_control: currentFullControlStatus })
@@ -32,7 +32,7 @@ const turnOnLampButton = (buttonState) => {
 }
 
 const turnOffLampButton = (buttonState) => {
-  latestFullControl = currentFullControl(currentLampState.full_control)
+  latestFullControl = currentFullControl(currentLampState?.full_control)
   const lampState = false;
   if (currentFullControlStatus != latestFullControl) {
     publishMessage(publishTopic, { device_id: device_id, state: lampState, full_control: currentFullControlStatus })
