@@ -1,0 +1,1 @@
+{"message":"(node:34790) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 current device listeners added to [Namespace]. Use emitter.setMaxListeners() to increase limit\n(Use `node --trace-warnings ...` to show where the warning was created)\n","timestamp":"04-06 14:12:10 +00:00","type":"err","process_id":0,"app_name":"smart_lamp"}
